@@ -1,45 +1,33 @@
 package com.infosys.inventory;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class ProductWork {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        ProductAccess product = new ProductAccess();
-
-        System.out.println("Enter the following Product Details");
-        System.out.println("Enter Product Id : ");
-        int productId = sc.nextInt();
-
-        System.out.println("Enter Product Name : ");
-        String productName = sc.next();
-
-        System.out.println("Enter Product Quantity : ");
-        int productQuantity = sc.nextInt();
-
-        System.out.println("Enter Product Price : ");
-        double productPrice = sc.nextDouble();
-
-        sc.nextLine();
-
-        System.out.println("Enter Product DeliveryDate(dd-MM-yyyy) : ");
-        String dateInput = sc.nextLine();
-
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-        Date productDeliveryDate = null;
-        try {
-            productDeliveryDate = sdf.parse(dateInput);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
+        ProductAccess obj = new ProductAccess();
+        while(true){
+            System.out.println("1. Add Product\n2.View All Products\n3.Search Product by ID\n4. Update Product\n5.Remove Product\n6.Exit");
+            int choice = 0;
+            try {
+                System.out.print("Enter you choice : ");
+                choice = sc.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid Input, Please give valid Input");
+            }
+            sc.nextLine();
+            switch (choice){
+                case 1 : obj.insertProduct();break;
+                case 2 : obj.viewAllProducts(); break;
+                case 3 : obj.searchProductById(); break;
+                case 4 : obj.updateProduct();break;
+                case 5 : obj.deleteProduct();break;
+                case 6 : System.exit(0);
+                default : System.out.println("Invalid choice try again");break;
+            }
         }
-
-        product.insertProduct(productId,productName,productQuantity,productPrice,productDeliveryDate);
-        System.out.println("----Product Details----");
-        product.displayProduct();
     }
 
 }

@@ -60,4 +60,14 @@ public class Product {
         this.deliveryDate = deliveryDate;
     }
 
+    @Override
+    public String toString() {
+        return "Product{" +
+                "productId=" + productId +
+                ", productName='" + productName + '\'' +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                ", deliveryDate=" + deliveryDate +
+                '}';
+    }
 }
