@@ -1,0 +1,8 @@
+ProductId,ProductName,ProductQuantity,ProductPrice,ProductCategory
+101,Flask,50,150,Kitchen
+102,Notebook,200,20,Stationery
+103,Pen,500,5,Stationery
+104,Bottle,100,80,Kitchen
+105,Chair,25,1200,Furniture
+106,Table,15,2500,Furniture
+107,Mug,75,90,Kitchen

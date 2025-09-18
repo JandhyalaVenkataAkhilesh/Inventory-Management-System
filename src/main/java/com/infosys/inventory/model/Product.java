@@ -1,23 +1,22 @@
-package com.infosys.inventory;
-import java.util.Date;
+package com.infosys.inventory.model;
 public class Product {
 
     private int productId;
     private String productName;
     private int quantity;
     private double price;
-    private Date deliveryDate;
+    private String Category;
 
     public Product(){
         super();
     }
 
-    public Product(int productId, String productName, int quantity, double price, Date deliveryDate) {
+    public Product(int productId, String productName, int quantity, double price, String Category) {
         this.productId = productId;
         this.productName = productName;
         this.quantity = quantity;
         this.price = price;
-        this.deliveryDate = deliveryDate;
+        this.Category = Category;
     }
 
     public int getProductId() {
@@ -52,12 +51,12 @@ public class Product {
         this.price = price;
     }
 
-    public Date getDeliveryDate() {
-        return deliveryDate;
+    public String getCategory() {
+        return Category;
     }
 
-    public void setDeliveryDate(Date deliveryDate) {
-        this.deliveryDate = deliveryDate;
+    public void setCategory(String category) {
+        Category = category;
     }
 
     @Override
@@ -67,7 +66,7 @@ public class Product {
                 ", productName='" + productName + '\'' +
                 ", quantity=" + quantity +
                 ", price=" + price +
-                ", deliveryDate=" + deliveryDate +
+                ", deliveryDate=" + Category +
                 '}';
     }
 }
