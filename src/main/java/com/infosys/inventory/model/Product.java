@@ -12,11 +12,11 @@ public class Product {
     }
 
     public Product(int productId, String productName, int quantity, double price, String Category) {
-        this.productId = productId;
-        this.productName = productName;
-        this.quantity = quantity;
-        this.price = price;
-        this.Category = Category;
+        setProductId(productId);
+        setProductName(productName);
+        setQuantity(quantity);
+        setPrice(price);
+        setCategory(Category);
     }
 
     public int getProductId() {
@@ -24,6 +24,8 @@ public class Product {
     }
 
     public void setProductId(int productId) {
+        if(productId < 0)
+            throw new IllegalArgumentException("❌ Product Id should be positive number");
         this.productId = productId;
     }
 
@@ -32,6 +34,8 @@ public class Product {
     }
 
     public void setProductName(String productName) {
+        if(productName==null || productName.trim().isEmpty())
+            throw new IllegalArgumentException("❌ Product Name should no empty");
         this.productName = productName;
     }
 
@@ -40,6 +44,8 @@ public class Product {
     }
 
     public void setQuantity(int quantity) {
+        if(quantity<0)
+            throw new IllegalArgumentException("❌ Quantity should be positive number");
         this.quantity = quantity;
     }
 
@@ -48,6 +54,8 @@ public class Product {
     }
 
     public void setPrice(double price) {
+        if(price < 0)
+            throw new IllegalArgumentException("❌ price should be positive number");
         this.price = price;
     }
 
@@ -56,6 +64,8 @@ public class Product {
     }
 
     public void setCategory(String category) {
+        if (category == null || category.trim().isEmpty())
+            throw new IllegalArgumentException("❌ Product Category should no empty");
         Category = category;
     }
 
