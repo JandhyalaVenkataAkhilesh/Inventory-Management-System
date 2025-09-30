@@ -35,21 +35,27 @@ public class ProductDao {
     }
 
     // retrieve a specific record from inventory
-    public void getProductById(int productId){
+    public Product getProductById(int productId){
         try(Connection con = DbConnection.getConnect();
             PreparedStatement pstmt = con.prepareStatement("select * from products where product_id=?;")
         ){
             pstmt.setInt(1,productId);
             ResultSet rs = pstmt.executeQuery();
 
-            if(!rs.next()){
+            if(!rs.next()) {
                 throw new ProductNotFoundException("Inventory is empty");
             }
-            System.out.println("Product Name : " + rs.getString(2));
-            System.out.println("Quantity : " + rs.getInt(3));
-            System.out.println("Price : " + rs.getDouble(4));
-            System.out.println("Category : " + rs.getString(5));
-
+//            System.out.println("Product Name : " + rs.getString(2));
+//            System.out.println("Quantity : " + rs.getInt(3));
+//            System.out.println("Price : " + rs.getDouble(4));
+//            System.out.println("Category : " + rs.getString(5));
+              Product p = new Product();
+              p.setProductId(rs.getInt(1));
+              p.setProductName(rs.getString(2));
+              p.setQuantity(rs.getInt(3));
+              p.setPrice(rs.getDouble(4));
+              p.setCategory(rs.getString(5));
+              return p;
         } catch (SQLException e) {
             throw new RuntimeException("Terminated due to " + e.getMessage());
         }

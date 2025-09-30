@@ -50,7 +50,11 @@ public class App {
                         System.out.print("Enter Product Id : ");
                         int searchId = scanner.nextInt();
                         scanner.nextLine();
-                        service.getProductById(searchId);
+                        Product pro = service.getProductById(searchId);
+                        System.out.println("Product Name : " + pro.getProductName());
+                        System.out.println("Quantity : " + pro.getQuantity());
+                        System.out.println("Price : " + pro.getPrice());
+                        System.out.println("Category : " + pro.getCategory());
                         break;
 
                     case 3:

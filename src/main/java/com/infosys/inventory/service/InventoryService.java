@@ -20,11 +20,12 @@ public class InventoryService {
         dao.addProduct(p);
     }
 
-    public void getProductById(int productId) throws ProductNotFoundException {
+    public Product getProductById(int productId) throws ProductNotFoundException {
         if (productId < 0) {
             throw new InvalidProductException("Product ID cannot be negative");
         }
-        dao.getProductById(productId);
+        Product p = dao.getProductById(productId);
+        return p;
     }
 
     public ArrayList<Product> getAllProducts() throws ProductNotFoundException {
