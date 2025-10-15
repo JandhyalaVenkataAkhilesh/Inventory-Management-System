@@ -5,6 +5,7 @@ import com.infosys.inventory.exceptions.InvalidProductException;
 import com.infosys.inventory.exceptions.ProductNotFoundException;
 import com.infosys.inventory.model.Product;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class InventoryService {
@@ -63,5 +64,13 @@ public class InventoryService {
         if (p.getCategory() == null || p.getCategory().isEmpty()){
             throw new InvalidProductException("Product category cannot empty");
         }
+    }
+
+    public void filterProducts(double minPrice, double maxPrice) throws SQLException {
+        if(minPrice<0)
+            throw new InvalidProductException("Price must be greater than or equal to 0");
+        if(maxPrice<0)
+            throw new InvalidProductException("Price must be greater than or equal to 0");
+        dao.FilterRange(minPrice,maxPrice);
     }
 }

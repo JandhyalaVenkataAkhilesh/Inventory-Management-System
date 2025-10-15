@@ -104,16 +104,16 @@ public class ProductDao {
             obj.setPrice(rs.getDouble(4));
             obj.setCategory(rs.getString(5));
 
-            if(p.getProductName().isEmpty() || p.getProductName() == null){
+            if (p.getProductName() == null || p.getProductName().isEmpty()) {
                 p.setProductName(obj.getProductName());
             }
-            if(p.getQuantity() == 0){
+            if (p.getQuantity() == 0) {
                 p.setQuantity(obj.getQuantity());
             }
-            if(p.getPrice() == 0){
+            if (p.getPrice() == 0) {
                 p.setPrice(obj.getPrice());
             }
-            if(p.getCategory() == null || p.getCategory().isEmpty()){
+            if (p.getCategory() == null || p.getCategory().isEmpty()) {
                 p.setCategory(obj.getCategory());
             }
 
@@ -175,4 +175,35 @@ public class ProductDao {
         }
     }
 
+    public void FilterRange(double minPrice, double maxPrice) throws SQLException {
+        Connection con = DbConnection.getConnect();
+        PreparedStatement pstmt = con.prepareStatement("SELECT * FROM products WHERE product_price BETWEEN ? AND ?");
+        pstmt.setDouble(1, minPrice);
+        pstmt.setDouble(2, maxPrice);
+
+        ResultSet rs = pstmt.executeQuery();
+
+        System.out.println("-------------------------------------------------------------");
+        System.out.printf("%-10s %-25s %-15s %-10s%n", "ID", "PRODUCT NAME", "QUANTITY","PRICE", "CATEGORY");
+        System.out.println("-------------------------------------------------------------");
+
+        boolean found = false;
+        while (rs.next()) {
+            found = true;
+            System.out.printf(
+                    "%-10d %-25s %-15s %-10.2f%n",
+                    rs.getInt("product_id"),
+                    rs.getString("product_name"),
+                    rs.getInt("product_quantity"),
+                    rs.getDouble("product_price"),
+                    rs.getString("product_category")
+            );
+        }
+
+        if (!found) {
+            System.out.println("No products found in the given range.");
+        }
+
+        System.out.println("-------------------------------------------------------------");
+    }
 }

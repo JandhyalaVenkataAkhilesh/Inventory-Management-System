@@ -17,7 +17,7 @@ public class App {
 
         while (true) {
             System.out.println("====Menu====");
-            System.out.println("1. Add Product\n2. Search Product By Id\n3. Retrieve All Products\n4. Update Product\n5. Delete Product\n6. CSV Report\n7. Exit");
+            System.out.println("1. Add Product\n2. Search Product By Id\n3. Retrieve All Products\n4. Update Product\n5. Delete Product\n6. CSV Report\n7. Filter Range\n8. Exit");
             System.out.print("Enter your choice : ");
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -83,7 +83,7 @@ public class App {
                         System.out.print("Enter Product Category (leave empty if no change) : ");
                         String updateCategory = scanner.nextLine();
 
-                        Product updateProduct = new Product(updateId,updateName,updateQuantity,updatePrice,updateCategory);
+                        Product updateProduct = new Product(updateId,updateName,updateQuantity,updatePrice,updateCategory,true);
                         service.updateInventory(updateProduct);
 
                         break;
@@ -103,6 +103,16 @@ public class App {
                         break;
 
                     case 7:
+                        System.out.print("Enter minimum price: ");
+                        double minPrice = scanner.nextDouble();
+                        scanner.nextLine();
+                        System.out.print("Enter maximum price: ");
+                        double maxPrice = scanner.nextDouble();
+                        scanner.nextLine();
+                        break;
+
+
+                    case 8:
                         System.out.println("Exiting... Goodbye!");
                         System.exit(0);
                         break;

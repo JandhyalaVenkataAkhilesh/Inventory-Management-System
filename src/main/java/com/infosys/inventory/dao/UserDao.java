@@ -21,25 +21,25 @@ public class UserDao implements UserDaoInterface {
         pstmt.setString(4, user.getRole());
         int count = pstmt.executeUpdate();
         if(count == 1)
-            System.out.println(count + "record successfully inserted");
+            System.out.println(count + " record successfully inserted");
         else
             System.out.println("Failed to insert");
     }
 
 
     @Override
-    public void getUserById(int id) throws SQLException {
+    public User getUserByName(String userName) throws SQLException {
 
         Connection con = DbConnection.getConnect();
-        PreparedStatement pstmt = con.prepareStatement("select * from users where id=?;");
-        pstmt.setInt(1,id);
+        PreparedStatement pstmt = con.prepareStatement("select * from users where username=?;");
+        pstmt.setString(1,userName);
         ResultSet rs = pstmt.executeQuery();
         if(!rs.next()){
-            throw new UserNotFound("No user exists with id " + id);
+            throw new UserNotFound("No user exists with name " + userName);
         }
-        System.out.println("User Name : " + rs.getString(2));
-        System.out.println("Password  : " + rs.getString(3));
-        System.out.println("Role      : " + rs.getString(4));
+        User user = new User(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4));
+
+        return user;
     }
     @Override
     public void getAllUser() throws SQLException {

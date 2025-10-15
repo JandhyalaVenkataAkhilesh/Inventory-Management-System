@@ -6,6 +6,6 @@ import java.sql.SQLException;
 
 public interface UserDaoInterface {
     void addUser(User user) throws SQLException;
-    void getUserById(int id) throws SQLException;
+    User getUserByName(String userName) throws SQLException;
     void getAllUser() throws SQLException;
 }
