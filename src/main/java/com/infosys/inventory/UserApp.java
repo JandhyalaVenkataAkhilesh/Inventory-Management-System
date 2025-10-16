@@ -71,7 +71,7 @@ public class UserApp {
             userDao.addUser(user);
             System.out.println("\n✅ Registration successful! You can now log in.\n");
 
-            // ✅ Directly navigate to menu based on role, no need to call login again
+
             System.out.println("\n✅ Login Successful");
             System.out.println("Welcome " + userName);
             System.out.println("Your Role is " + role);
@@ -116,7 +116,7 @@ public class UserApp {
         }
     }
 
-    // ==================== ADMIN MENU ====================
+
     public static void adminMenu() {
         while (true) {
             System.out.println("\n=====================================================");
@@ -167,7 +167,7 @@ public class UserApp {
     }
 
 
-    // ==================== USER MENU ====================
+
     public static void userMenu() {
         while (true) {
             System.out.println("\n=====================================================");
@@ -175,8 +175,9 @@ public class UserApp {
             System.out.println("=====================================================");
             System.out.println("1️⃣  Search Product by ID");
             System.out.println("2️⃣  View All Products");
-            System.out.println("3️⃣  Logout");
-            System.out.print("\n👉 Select an option (1-3): ");
+            System.out.println("3️⃣  Filter Products");
+            System.out.println("4️⃣  logout");
+            System.out.print("\n👉 Select an option (1-4): ");
 
             int choice = 0;
             try {
@@ -191,7 +192,8 @@ public class UserApp {
             switch (choice) {
                 case 1 -> searchProductById();
                 case 2 -> viewAllProducts();
-                case 3 -> {
+                case 3 -> filterProduct();
+                case 4 -> {
                     System.out.println("\n👋 Logged out successfully.\n");
                     return;
                 }
@@ -200,7 +202,7 @@ public class UserApp {
         }
     }
 
-    // ==================== PRODUCT OPERATIONS ====================
+
     public static void addProduct() {
         try {
             System.out.println("\n📦 --- Add New Product ---");
