@@ -64,6 +64,9 @@ public class InventoryService {
         if (p.getCategory() == null || p.getCategory().isEmpty()){
             throw new InvalidProductException("Product category cannot empty");
         }
+        if(p.getThreshold() < 0){
+            throw new InvalidProductException("Threshold value should not negative");
+        }
     }
 
     public void filterProducts(double minPrice, double maxPrice) throws SQLException {

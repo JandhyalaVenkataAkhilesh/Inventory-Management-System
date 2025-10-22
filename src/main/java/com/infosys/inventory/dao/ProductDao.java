@@ -1,209 +1,180 @@
 package com.infosys.inventory.dao;
 
-import com.infosys.inventory.exceptions.ProductNotFoundException;
 import com.infosys.inventory.model.Product;
 import com.infosys.inventory.util.DbConnection;
 
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class ProductDao {
 
     // insert a record into inventory
     public void addProduct(Product p) {
-        try(Connection con = DbConnection.getConnect();
-            PreparedStatement pstmt = con.prepareStatement("insert into products values(?,?,?,?,?);")
-        ){
-            pstmt.setInt(1,p.getProductId());
-            pstmt.setString(2,p.getProductName());
-            pstmt.setInt(3,p.getQuantity());
-            pstmt.setDouble(4,p.getPrice());
-            pstmt.setString(5,p.getCategory());
-            int count = pstmt.executeUpdate();
-            if(count == 1){
-                System.out.println(count + " record successfully inserted");
-            }else{
-                System.out.println("Failed to insert the record into inventory");
-            }
-        }catch(SQLException e){
-            throw new RuntimeException("Terminated due to " + e.getMessage());
+        try (Connection con = DbConnection.getConnect();
+             PreparedStatement pstmt = con.prepareStatement("insert into products values(?,?,?,?,?,?)")) {
+
+            pstmt.setInt(1, p.getProductId());
+            pstmt.setString(2, p.getProductName());
+            pstmt.setInt(3, p.getQuantity());
+            pstmt.setDouble(4, p.getPrice());
+            pstmt.setString(5, p.getCategory());
+            pstmt.setInt(6,p.getThreshold());
+            int count=pstmt.executeUpdate();
+            if(count==1)
+                System.out.println("✅ Record inserted successfully!");
+            else
+                System.out.println(" ❌User not Found");
+
+        } catch (SQLException e) {
+            System.out.println("❌ Failed to insert record – " + e.getMessage());
         }
     }
 
-    // retrieve a specific record from inventory
-    public Product getProductById(int productId){
-        try(Connection con = DbConnection.getConnect();
-            PreparedStatement pstmt = con.prepareStatement("select * from products where product_id=?;")
-        ){
-            pstmt.setInt(1,productId);
+    // retrieve a specific record
+    public Product getProductById(int productId) {
+        try (Connection con = DbConnection.getConnect();
+             PreparedStatement pstmt = con.prepareStatement("select * from products where product_id=?")) {
+
+            pstmt.setInt(1, productId);
             ResultSet rs = pstmt.executeQuery();
 
-            if(!rs.next()) {
-                throw new ProductNotFoundException("Inventory is empty");
+            if (!rs.next()) {
+                System.out.println("❌ Failed to retrieve record – product not found.");
+                return null;
             }
-//            System.out.println("Product Name : " + rs.getString(2));
-//            System.out.println("Quantity : " + rs.getInt(3));
-//            System.out.println("Price : " + rs.getDouble(4));
-//            System.out.println("Category : " + rs.getString(5));
-              Product p = new Product();
-              p.setProductId(rs.getInt(1));
-              p.setProductName(rs.getString(2));
-              p.setQuantity(rs.getInt(3));
-              p.setPrice(rs.getDouble(4));
-              p.setCategory(rs.getString(5));
-              return p;
+
+            Product p = new Product();
+            p.setProductId(rs.getInt(1));
+            p.setProductName(rs.getString(2));
+            p.setQuantity(rs.getInt(3));
+            p.setPrice(rs.getDouble(4));
+            p.setCategory(rs.getString(5));
+            p.setThreshold(rs.getInt(6));
+            return p;
+
         } catch (SQLException e) {
-            throw new RuntimeException("Terminated due to " + e.getMessage());
+            System.out.println("❌ Failed to retrieve record – " + e.getMessage());
+            return null;
         }
     }
 
-    // retrieve all records from inventory
-//    public void getProducts(){
-//        try(Connection con = DbConnection.getConnect();
-//            Statement stmt = con.createStatement();
-//            ResultSet rs = stmt.executeQuery("select * from products;")
-//        ){
-//            boolean found = false;
-//            while(rs.next()){
-//                found = true;
-//                System.out.println("Product ID : " + rs.getInt(1));
-//                System.out.println("Product Name : " + rs.getString(2));
-//                System.out.println("Quantity : " + rs.getInt(3));
-//                System.out.println("Price : " + rs.getDouble(4));
-//                System.out.println("Category : " + rs.getString(5));
-//                System.out.println();
-//            }
-//            if(!found){
-//                throw new ProductNotFoundException("Inventory is empty");
-//            }
-//        } catch (SQLException e) {
-//            throw new RuntimeException("Terminated due to " + e.getMessage());
-//        }
-//    }
+    // update record
+    public void updateInventory(Product p) {
+        try (Connection con = DbConnection.getConnect();
+             PreparedStatement pstmt = con.prepareStatement(
+                     "update products set product_name=?,product_quantity=?,product_price=?,product_category=?,threshold=? where product_id=?");
+             PreparedStatement spstmt = con.prepareStatement("select * from products where product_id=?")) {
 
-    //update the record from inventory
-    public void updateInventory(Product p){
-        try(Connection con = DbConnection.getConnect();
-            PreparedStatement pstmt = con.prepareStatement("update products set product_name=?,product_quantity=?,product_price=?,product_category=? where product_id=?;");
-            PreparedStatement spstmt = con.prepareStatement("select * from products where product_id=?")
-
-        ){
-            spstmt.setInt(1,p.getProductId());
+            spstmt.setInt(1, p.getProductId());
             ResultSet rs = spstmt.executeQuery();
-            if(!rs.next()){
-                throw new ProductNotFoundException("Inventory is empty");
-            }
-            Product obj = new Product();
-            obj.setProductId(rs.getInt(1));
-            obj.setProductName(rs.getString(2));
-            obj.setQuantity(rs.getInt(3));
-            obj.setPrice(rs.getDouble(4));
-            obj.setCategory(rs.getString(5));
 
-            if (p.getProductName() == null || p.getProductName().isEmpty()) {
-                p.setProductName(obj.getProductName());
-            }
-            if (p.getQuantity() == 0) {
-                p.setQuantity(obj.getQuantity());
-            }
-            if (p.getPrice() == 0) {
-                p.setPrice(obj.getPrice());
-            }
-            if (p.getCategory() == null || p.getCategory().isEmpty()) {
-                p.setCategory(obj.getCategory());
+            if (!rs.next()) {
+                System.out.println("❌ Failed to update record – product not found.");
+                return;
             }
 
-            pstmt.setString(1,p.getProductName());
-            pstmt.setInt(2,p.getQuantity());
-            pstmt.setDouble(3,p.getPrice());
-            pstmt.setString(4,p.getCategory());
-            pstmt.setInt(5,p.getProductId());
+            Product obj = new Product(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getDouble(4), rs.getString(5));
 
-            int count = pstmt.executeUpdate();
+            if (p.getProductName() == null || p.getProductName().isEmpty()) p.setProductName(obj.getProductName());
+            if (p.getQuantity() == 0) p.setQuantity(obj.getQuantity());
+            if (p.getPrice() == 0) p.setPrice(obj.getPrice());
+            if (p.getCategory() == null || p.getCategory().isEmpty()) p.setCategory(obj.getCategory());
+            if(p.getThreshold() == 0) p.setThreshold(obj.getThreshold());
+            pstmt.setString(1, p.getProductName());
+            pstmt.setInt(2, p.getQuantity());
+            pstmt.setDouble(3, p.getPrice());
+            pstmt.setString(4, p.getCategory());
+            pstmt.setInt(5,p.getThreshold());
+            pstmt.setInt(6, p.getProductId());
 
-            if(count == 1){
-                System.out.println(count + " record successfully updated");
-            }else{
-                System.out.println("Failed to update");
-            }
-        }catch (SQLException e){
-            throw new RuntimeException("Terminated due to " + e.getMessage());
+            int count=pstmt.executeUpdate();
+            if(count==1)
+                System.out.println("✅ Record updated successfully!");
+            else
+                System.out.println("❌ No product found with this ID: " + p.getProductId());
+
+        } catch (SQLException e) {
+            System.out.println("❌ Failed to update record – " + e.getMessage());
         }
     }
 
-    //delete a record from inventory
-    public void deleteProduct(int productId){
-        try(Connection con = DbConnection.getConnect();
-            PreparedStatement pstmt = con.prepareStatement("delete from products where product_id=?;")
-        ){
-            pstmt.setInt(1,productId);
-            int count = pstmt.executeUpdate();
-            if(count == 1){
-                System.out.println(count + " record successfully deleted");
-            }else{
-                throw new ProductNotFoundException("Inventory is empty");
-            }
-        }catch (SQLException e){
-            throw new RuntimeException("Terminated due to " + e.getMessage());
+    // delete record
+    public void deleteProduct(int productId) {
+        try (Connection con = DbConnection.getConnect();
+             PreparedStatement pstmt = con.prepareStatement("delete from products where product_id=?")) {
+
+            pstmt.setInt(1, productId);
+            int count=pstmt.executeUpdate();
+
+            if(count==1)
+                System.out.println("✅ Record deleted successfully!");
+            else
+                System.out.println("❌ No product found with this ID: " + productId);
+        } catch (SQLException e) {
+            System.out.println("❌ Failed to delete record – " + e.getMessage());
         }
     }
 
-    public ArrayList<Product> getAllProducts(){
-        try(Connection con = DbConnection.getConnect();
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("select * from products")
-        ){
-            ArrayList<Product> allProducts = new ArrayList<>();
-            while (rs.next()){
+    // retrieve all records
+    public ArrayList<Product> getAllProducts() {
+        ArrayList<Product> allProducts = new ArrayList<>();
+        try (Connection con = DbConnection.getConnect();
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery("select * from products")) {
+
+            while (rs.next()) {
                 Product obj = new Product();
                 obj.setProductId(rs.getInt(1));
                 obj.setProductName(rs.getString(2));
                 obj.setQuantity(rs.getInt(3));
                 obj.setPrice(rs.getDouble(4));
                 obj.setCategory(rs.getString(5));
+                obj.setThreshold(rs.getInt(6));
                 allProducts.add(obj);
             }
 
-            return allProducts;
+            if (allProducts.isEmpty())
+                System.out.println("❌ Failed to retrieve records – inventory is empty.");
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("❌ Failed to retrieve records – " + e.getMessage());
         }
+        return allProducts;
     }
 
-    public void FilterRange(double minPrice, double maxPrice) throws SQLException {
-        Connection con = DbConnection.getConnect();
-        PreparedStatement pstmt = con.prepareStatement("SELECT * FROM products WHERE product_price BETWEEN ? AND ?");
-        pstmt.setDouble(1, minPrice);
-        pstmt.setDouble(2, maxPrice);
+    // filter products by price range
+    public void FilterRange(double minPrice, double maxPrice) {
+        try (Connection con = DbConnection.getConnect();
+             PreparedStatement pstmt = con.prepareStatement("SELECT * FROM products WHERE product_price BETWEEN ? AND ?")) {
 
-        ResultSet rs = pstmt.executeQuery();
+            pstmt.setDouble(1, minPrice);
+            pstmt.setDouble(2, maxPrice);
+            ResultSet rs = pstmt.executeQuery();
 
-        System.out.println("-------------------------------------------------------------");
-        System.out.printf("%-10s %-25s %-15s %-10s%n", "ID", "PRODUCT NAME", "QUANTITY","PRICE", "CATEGORY");
-        System.out.println("-------------------------------------------------------------");
+            boolean found = false;
+            System.out.println("-----------------------------------------------------------------------------------------");
+            System.out.printf("%-10s %-25s %-15s %-10s %-15s %-15s%n",
+                    "ID", "PRODUCT NAME", "QUANTITY", "PRICE", "CATEGORY", "THRESHOLD");
+            System.out.println("-----------------------------------------------------------------------------------------");
 
-        boolean found = false;
-        while (rs.next()) {
-            found = true;
-            System.out.printf(
-                    "%-10d %-25s %-15s %-10.2f%n",
-                    rs.getInt("product_id"),
-                    rs.getString("product_name"),
-                    rs.getInt("product_quantity"),
-                    rs.getDouble("product_price"),
-                    rs.getString("product_category")
-            );
+            while (rs.next()) {
+                found = true;
+                System.out.printf("%-10d %-25s %-15d %-10.2f %-15s %-15d%n",
+                        rs.getInt("product_id"),
+                        rs.getString("product_name"),
+                        rs.getInt("product_quantity"),
+                        rs.getDouble("product_price"),
+                        rs.getString("product_category"),
+                        rs.getInt("threshold"));
+            }
+
+            if (!found)
+                System.out.println("❌ No products found within the given price range.");
+
+            System.out.println("-----------------------------------------------------------------------------------------");
+
+        } catch (SQLException e) {
+            System.out.println("❌ Failed to filter products – " + e.getMessage());
         }
-
-        if (!found) {
-            System.out.println("No products found in the given range.");
-        }
-
-        System.out.println("-------------------------------------------------------------");
     }
 }

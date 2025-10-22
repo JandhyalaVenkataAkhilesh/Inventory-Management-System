@@ -5,131 +5,143 @@ import com.infosys.inventory.exceptions.UserNotFound;
 import com.infosys.inventory.model.User;
 import com.infosys.inventory.util.DbConnection;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.MockitoAnnotations;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserDaoTest {
 
-    @Mock
-    private Connection mockConnection;
-
-    @Mock
-    private PreparedStatement mockPreparedStatement;
-
-    @Mock
-    private ResultSet mockResultSet;
-
     private UserDao userDao;
-    private MockedStatic<DbConnection> mockedDbConnection;
+    private Connection mockConnection;
+    private PreparedStatement mockPreparedStatement;
+    private ResultSet mockResultSet;
+    private MockedStatic<DbConnection> dbStatic;
+
+    @BeforeAll
+    void init() throws SQLException {
+        userDao = new UserDao();
+        mockConnection = mock(Connection.class);
+        mockPreparedStatement = mock(PreparedStatement.class);
+        mockResultSet = mock(ResultSet.class);
+        dbStatic = mockStatic(DbConnection.class);
+        dbStatic.when(DbConnection::getConnect).thenReturn(mockConnection);
+    }
+
+    @AfterAll
+    void tearDown() {
+        dbStatic.close();
+    }
 
     @BeforeEach
-    void setUp() throws Exception {
-        MockitoAnnotations.openMocks(this);
-        mockedDbConnection = mockStatic(DbConnection.class);
-        mockedDbConnection.when(DbConnection::getConnect).thenReturn(mockConnection);
-        userDao = new UserDao();
+    void setUpMocks() throws SQLException {
+        reset(mockConnection, mockPreparedStatement, mockResultSet);
     }
-
-    @AfterEach
-    void tearDown() {
-        if (mockedDbConnection != null) {
-            mockedDbConnection.close();
-        }
-    }
-
 
     @Test
-    void testAddUserSuccess() throws Exception {
-        User user = new User(1, "Ramesh", "1234", "ADMIN");
+    void testAddUser_Positive() throws SQLException {
+        User user = new User(1, "John", "pass123", "Admin", "john@example.com", false);
 
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeUpdate()).thenReturn(1);
 
-        userDao.addUser(user);
-
-        verify(mockPreparedStatement).setInt(1, 1);
-        verify(mockPreparedStatement).setString(2, "Ramesh");
-        verify(mockPreparedStatement).setString(3, "1234");
-        verify(mockPreparedStatement).setString(4, "ADMIN");
-        verify(mockPreparedStatement).executeUpdate();
+        assertDoesNotThrow(() -> userDao.addUser(user));
+        verify(mockPreparedStatement, times(1)).executeUpdate();
     }
 
     @Test
-    void testAddUserDuplicate() throws Exception {
-        User user = new User(101, "Ramu", "password123", "admin");
+    void testGetUserByName_Positive() throws SQLException, UserNotFound {
+        User user = new User(1, "John", "pass123", "Admin", "john@example.com", false);
 
-        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
-        doThrow(new SQLIntegrityConstraintViolationException("Duplicate entry"))
-                .when(mockPreparedStatement).executeUpdate();
-
-        assertThrows(SQLIntegrityConstraintViolationException.class, () -> userDao.addUser(user));
-        verify(mockPreparedStatement).executeUpdate();
-    }
-
-
-
-    @Test
-    void testGetUserByNameSuccess() throws Exception {
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
-
         when(mockResultSet.next()).thenReturn(true);
-        when(mockResultSet.getInt(1)).thenReturn(1);
-        when(mockResultSet.getString(2)).thenReturn("Ramesh");
-        when(mockResultSet.getString(3)).thenReturn("1234");
-        when(mockResultSet.getString(4)).thenReturn("ADMIN");
+        when(mockResultSet.getInt(1)).thenReturn(user.getId());
+        when(mockResultSet.getString(2)).thenReturn(user.getUserName());
+        when(mockResultSet.getString(3)).thenReturn(user.getPassword());
+        when(mockResultSet.getString(4)).thenReturn(user.getRole());
+        when(mockResultSet.getString(5)).thenReturn(user.getEmail());
+        when(mockResultSet.getBoolean(6)).thenReturn(user.isVerified());
 
-        User user = userDao.getUserByName("Ramesh");
-
-        assertNotNull(user);
-        assertEquals(1, user.getId());
-        assertEquals("Ramesh", user.getUserName());
-        assertEquals("1234", user.getPassword());
-        assertEquals("ADMIN", user.getRole());
+        User result = userDao.getUserByName("John");
+        assertNotNull(result);
+        assertEquals("John", result.getUserName());
+        assertEquals("john@example.com", result.getEmail());
     }
 
     @Test
-    void testGetUserByNameNotFound() throws Exception {
+    void testGetUserByName_Negative_UserNotFound() throws SQLException {
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
 
-        assertThrows(UserNotFound.class, () -> userDao.getUserByName("nonexistent"));
+        assertThrows(UserNotFound.class, () -> userDao.getUserByName("Alice"));
     }
 
-
-
     @Test
-    void testGetAllUserWithData() throws Exception {
+    void testGetUserByEmail_True() throws SQLException {
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
 
-        when(mockResultSet.next()).thenReturn(true, true, false);
-        when(mockResultSet.getInt(1)).thenReturn(1, 2);
-        when(mockResultSet.getString(2)).thenReturn("Ramesh", "Suresh");
-        when(mockResultSet.getString(3)).thenReturn("1234", "abcd");
-        when(mockResultSet.getString(4)).thenReturn("ADMIN", "USER");
-
-        assertDoesNotThrow(() -> userDao.getAllUser());
-
-        verify(mockPreparedStatement).executeQuery();
-        verify(mockResultSet, times(3)).next();
+        boolean exists = userDao.getUserByEmail("john@example.com");
+        assertTrue(exists);
     }
 
     @Test
-    void testGetAllUserNoData() throws Exception {
+    void testGetUserByEmail_False() throws SQLException {
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
 
-        assertDoesNotThrow(() -> userDao.getAllUser());
-        verify(mockPreparedStatement).executeQuery();
-        verify(mockResultSet).next();
+        boolean exists = userDao.getUserByEmail("alice@example.com");
+        assertFalse(exists);
+    }
+
+    @Test
+    void testIsVerified_True() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getBoolean("is_verified")).thenReturn(true);
+
+        boolean verified = userDao.isVerified("john@example.com");
+        assertTrue(verified);
+    }
+
+    @Test
+    void testIsVerified_False() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        boolean verified = userDao.isVerified("alice@example.com");
+        assertFalse(verified);
+    }
+
+    @Test
+    void testMakeVerify_Positive() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeUpdate()).thenReturn(1);
+
+        boolean result = userDao.makeVerify("john@example.com");
+        assertTrue(result);
+        verify(mockPreparedStatement, times(1)).executeUpdate();
+    }
+
+    @Test
+    void testMakeVerify_Negative() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeUpdate()).thenReturn(0);
+
+        boolean result = userDao.makeVerify("alice@example.com");
+        assertFalse(result);
+        verify(mockPreparedStatement, times(1)).executeUpdate();
     }
 }

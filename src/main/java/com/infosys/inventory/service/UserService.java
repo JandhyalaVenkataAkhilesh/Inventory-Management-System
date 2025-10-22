@@ -17,21 +17,23 @@ public class UserService {
 
 
     public User login(String userName, String password) throws SQLException {
-        User user = dao.getUserByName(userName);
-        if(user == null){
-            System.out.println("User not found");
-            return user;
-        }
 
-        if(user.getPassword().trim().equals(password)){
-            System.out.println("✅ Login Successful");
-            System.out.println("Welcome " + userName);
-            System.out.println("Your Role is " + user.getRole());
-            return user;
-        }else{
-            System.out.println("Invalid User");
+        User user = dao.getUserByName(userName);
+
+        if (user == null || !user.getPassword().equals(password)) {
+//            System.out.println("❌ Invalid username or password.");
             return null;
         }
+
+        if (!user.isVerified()) {
+//            System.out.println("⚠️ Please verify your email before login.");
+            return null;
+        }
+
+        System.out.println("✅ Login Successful");
+        System.out.println("Welcome " + user.getUserName());
+        System.out.println("Your Role is " + user.getRole());
+        return user;
     }
 
 }

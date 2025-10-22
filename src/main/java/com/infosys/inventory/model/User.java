@@ -7,12 +7,25 @@ public class User {
     private String userName;
     private String password;
     private String role;
+    private String email;
+    private boolean isVerified;
 
-    public User(int id, String userName, String password, String role) {
+    public User(int id, String userName, String password, String role, String email) {
         this.id = id;
         this.userName = userName;
         this.password = password;
         this.role = role;
+        this.email = email;
+        this.isVerified = false;
+    }
+
+    public User(int id, String userName, String password, String role, String email, boolean isVerified) {
+        this.id = id;
+        this.userName = userName;
+        this.password = password;
+        this.role = role;
+        this.email = email;
+        this.isVerified = isVerified;
     }
 
     public User() {
@@ -54,8 +67,24 @@ public class User {
     }
 
     public void setRole(String role) {
-        if(password == null || password.isEmpty())
+        if(role == null || role.isEmpty())
             throw new InputMismatchException("Role should not be Empty");
         this.role = role;
     }
+
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        if(email == null || email.isEmpty())
+            throw new InputMismatchException("email should not be Empty");
+        this.email = email;
+    }
+
+    public boolean isVerified(){
+        return this.isVerified;
+    }
+
 }

@@ -7,6 +7,7 @@ public class Product {
     private int quantity;
     private double price;
     private String category;
+    private int threshold;
 
     public Product() { super(); }
 
@@ -26,6 +27,24 @@ public class Product {
         this.quantity = quantity;
         this.price = price;
         this.category = category;
+    }
+
+    public Product(int productId, String productName, int quantity, double price, String category, int threshold) {
+        this.productId = productId;
+        this.productName = productName;
+        this.quantity = quantity;
+        this.price = price;
+        this.category = category;
+        this.threshold = threshold;
+    }
+
+    public Product(int productId, String productName, int quantity, double price, String category, int threshold, boolean fromDB) {
+        this.productId = productId;
+        this.productName = productName;
+        this.quantity = quantity;
+        this.price = price;
+        this.category = category;
+        this.threshold = threshold;
     }
 
     // Getters and setters with strict validation
@@ -59,6 +78,14 @@ public class Product {
         if (category == null || category.trim().isEmpty())
             throw new IllegalArgumentException("❌ Product Category should not be empty");
         this.category = category;
+    }
+
+    public int getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(int threshold) {
+        this.threshold = threshold;
     }
 
     @Override

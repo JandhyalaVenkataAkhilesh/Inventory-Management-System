@@ -5,6 +5,7 @@ import com.infosys.inventory.model.User;
 import com.infosys.inventory.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -13,45 +14,61 @@ import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class UserServiceTest {
+class UserServiceTest {
 
     @Mock
     private UserDao mockDao;
 
+    @InjectMocks
     private UserService userService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        userService = new UserService(mockDao);
     }
 
     @Test
-    void testLoginSuccess() throws SQLException {
-        User user = new User(1, "Ramesh", "1234", "ADMIN");
-        when(mockDao.getUserByName("Ramesh")).thenReturn(user);
+    void testLogin_Success() throws SQLException {
+        User user = new User(1, "alice", "pass123", "Admin", "alice@example.com", true);
+        when(mockDao.getUserByName("alice")).thenReturn(user);
 
-        User result = userService.login("Ramesh", "1234");
+        User result = userService.login("alice", "pass123");
 
         assertNotNull(result);
-        assertEquals("Ramesh", result.getUserName());
-        assertEquals("ADMIN", result.getRole());
+        assertEquals("alice", result.getUserName());
+        assertEquals("Admin", result.getRole());
+        verify(mockDao, times(1)).getUserByName("alice");
     }
 
     @Test
-    void testLoginUserNotFound() throws SQLException {
-        when(mockDao.getUserByName("nonexistent")).thenReturn(null);
+    void testLogin_InvalidPassword() throws SQLException {
+        User user = new User(1, "alice", "pass123", "Admin", "alice@example.com", true);
+        when(mockDao.getUserByName("alice")).thenReturn(user);
 
-        User result = userService.login("nonexistent", "1234");
+        User result = userService.login("alice", "wrongpass");
+
         assertNull(result);
+        verify(mockDao, times(1)).getUserByName("alice");
     }
 
     @Test
-    void testLoginInvalidPassword() throws SQLException {
-        User user = new User(2, "Ramesh", "abcd", "USER");
-        when(mockDao.getUserByName("Ramesh")).thenReturn(user);
+    void testLogin_UnverifiedUser() throws SQLException {
+        User user = new User(1, "alice", "pass123", "Admin", "alice@example.com", false);
+        when(mockDao.getUserByName("alice")).thenReturn(user);
 
-        User result = userService.login("Ramesh", "wrongPassword");
+        User result = userService.login("alice", "pass123");
+
         assertNull(result);
+        verify(mockDao, times(1)).getUserByName("alice");
+    }
+
+    @Test
+    void testLogin_NonExistentUser() throws SQLException {
+        when(mockDao.getUserByName("bob")).thenReturn(null);
+
+        User result = userService.login("bob", "anyPassword");
+
+        assertNull(result);
+        verify(mockDao, times(1)).getUserByName("bob");
     }
 }
