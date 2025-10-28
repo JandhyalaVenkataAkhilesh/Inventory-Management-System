@@ -142,7 +142,7 @@ public class UserApp {
     public static void existingUserLogin() {
         try {
             System.out.println(PURPLE_BOLD + "\n  ========================================");
-            System.out.println("  │ " + WHITE_BOLD + "          🔐  USER LOGIN      " + PURPLE_BOLD + "  │");
+            System.out.println("  │ " + WHITE_BOLD + "          🔐  USER LOGIN      " + PURPLE_BOLD + "      │");
             System.out.println("  ========================================" + RESET);
             System.out.print(CYAN + "  👤  Enter Username : " + RESET);
             String userName = sc.nextLine();
@@ -285,15 +285,15 @@ public class UserApp {
     public static void addProduct() {
         try {
             System.out.println(PURPLE_BOLD + "\n  ========================================");
-            System.out.println("  │ " + WHITE_BOLD + "  📦  ADD NEW PRODUCT   " + PURPLE_BOLD + "   │");
+            System.out.println("  │ " + WHITE_BOLD + "  📦  ADD NEW PRODUCT   " + PURPLE_BOLD + "    │");
             System.out.println("  ========================================" + RESET);
-            System.out.print(CYAN + "  🔢  Enter Product ID (Number) : " + RESET);
+            System.out.print(CYAN + "  🔢  Enter Product ID        : " + RESET);
             int productId = sc.nextInt(); sc.nextLine();
             System.out.print(CYAN + "  🏷️  Enter Product Name      : " + RESET);
             String productName = sc.nextLine().trim();
-            System.out.print(CYAN + "  📦  Enter Quantity (Number) : " + RESET);
+            System.out.print(CYAN + "  📦  Enter Quantity          : " + RESET);
             int quantity = sc.nextInt(); sc.nextLine();
-            System.out.print(CYAN + "  💰  Enter Price (Decimal)   : " + RESET);
+            System.out.print(CYAN + "  💰  Enter Price             : " + RESET);
             double price = sc.nextDouble(); sc.nextLine();
             System.out.print(CYAN + "  🗂️  Enter Category          : " + RESET);
             String category = sc.nextLine().trim();
@@ -333,7 +333,7 @@ public class UserApp {
     public static void viewAllProducts() {
         try {
             System.out.println(PURPLE_BOLD + "\n  =======================================================");
-            System.out.println("  │ " + WHITE_BOLD + "  📦  COMPLETE PRODUCT INVENTORY   " + PURPLE_BOLD + "            │");
+            System.out.println("  │ " + WHITE_BOLD + "  📦  COMPLETE PRODUCT INVENTORY   " + PURPLE_BOLD + "             │");
             System.out.println("  =======================================================" + RESET);
             ArrayList<Product> products = productDao.getAllProducts();
 
@@ -359,7 +359,7 @@ public class UserApp {
             String updateName = sc.nextLine().trim();
             System.out.print(CYAN + "  📦  Enter New Quantity (0 for no change) : " + RESET);
             int updateQuantity = sc.nextInt(); sc.nextLine();
-            System.out.print(CYAN + "  💰  Enter New Price (0.0 for no change)  : " + RESET);
+            System.out.print(CYAN + "  💰  Enter New Price (0 for no change)  : " + RESET);
             double updatePrice = sc.nextDouble(); sc.nextLine();
             System.out.print(CYAN + "  🗂️  Enter New Category (leave blank)     : " + RESET);
             String updateCategory = sc.nextLine().trim();

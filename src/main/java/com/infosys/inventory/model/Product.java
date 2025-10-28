@@ -9,7 +9,9 @@ public class Product {
     private String category;
     private int threshold;
 
-    public Product() { super(); }
+    public Product() {
+        super();
+    }
 
     // Constructor for adding/updating products (strict validation)
     public Product(int productId, String productName, int quantity, double price, String category) {
@@ -30,11 +32,7 @@ public class Product {
     }
 
     public Product(int productId, String productName, int quantity, double price, String category, int threshold) {
-        this.productId = productId;
-        this.productName = productName;
-        this.quantity = quantity;
-        this.price = price;
-        this.category = category;
+        this(productId, productName, quantity, price, category);
         this.threshold = threshold;
     }
 
@@ -47,36 +45,54 @@ public class Product {
         this.threshold = threshold;
     }
 
-    // Getters and setters with strict validation
-    public int getProductId() { return productId; }
+    // Getters and Setters with validation
+    public int getProductId() {
+        return productId;
+    }
+
     public void setProductId(int productId) {
-        if (productId < 0) throw new IllegalArgumentException("❌ Product Id should be positive");
+        if (productId < 0)
+            throw new IllegalArgumentException("❌ Product Id should be positive number");
         this.productId = productId;
     }
 
-    public String getProductName() { return productName; }
+    public String getProductName() {
+        return productName;
+    }
+
     public void setProductName(String productName) {
         if (productName == null || productName.trim().isEmpty())
-            throw new IllegalArgumentException("❌ Product Name should not be empty");
+            throw new IllegalArgumentException("❌ Product Name should no empty");
         this.productName = productName;
     }
 
-    public int getQuantity() { return quantity; }
+    public int getQuantity() {
+        return quantity;
+    }
+
     public void setQuantity(int quantity) {
-        if (quantity < 0) throw new IllegalArgumentException("❌ Quantity should be positive");
+        if (quantity < 0)
+            throw new IllegalArgumentException("❌ Quantity should be positive number");
         this.quantity = quantity;
     }
 
-    public double getPrice() { return price; }
+    public double getPrice() {
+        return price;
+    }
+
     public void setPrice(double price) {
-        if (price < 0) throw new IllegalArgumentException("❌ Price should be positive");
+        if (price < 0)
+            throw new IllegalArgumentException("❌ price should be positive number");
         this.price = price;
     }
 
-    public String getCategory() { return category; }
+    public String getCategory() {
+        return category;
+    }
+
     public void setCategory(String category) {
         if (category == null || category.trim().isEmpty())
-            throw new IllegalArgumentException("❌ Product Category should not be empty");
+            throw new IllegalArgumentException("❌ Product Category should no empty");
         this.category = category;
     }
 
@@ -90,7 +106,8 @@ public class Product {
 
     @Override
     public String toString() {
-        return String.format("Product{id=%d, name='%s', quantity=%d, price=%.2f, category='%s'}",
+        return String.format(
+                "Product{id=%d, name='%s', quantity=%d, price=%.2f, category='%s'}",
                 productId, productName, quantity, price, category);
     }
 }

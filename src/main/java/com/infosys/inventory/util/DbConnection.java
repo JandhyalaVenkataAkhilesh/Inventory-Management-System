@@ -5,9 +5,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DbConnection {
-    public final static String connectionUrl = System.getenv("connectionUrl");
-    public final static String userName = System.getenv("userName");
-    public final static String password = System.getenv("password");
+    public final static String connectionUrl = System.getenv("DB_URL");
+    public final static String userName = System.getenv("DB_USER");
+    public final static String password = System.getenv("DB_PASS");
 
     public static Connection getConnect() throws SQLException {
         if(connectionUrl == null || userName == null || password == null)
