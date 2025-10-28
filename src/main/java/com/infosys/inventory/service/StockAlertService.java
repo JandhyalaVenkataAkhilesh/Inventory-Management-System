@@ -2,28 +2,41 @@ package com.infosys.inventory.service;
 
 import com.infosys.inventory.dao.ProductDao;
 import com.infosys.inventory.model.Product;
-
 import java.util.ArrayList;
 
 public class StockAlertService {
     public ProductDao dao = new ProductDao();
-    public void checkAlertService(String email, String userName){
+
+    public void checkAlertService(String email, String userName) {
         try {
             ArrayList<Product> allProducts = dao.getAllProducts();
             int targetStockLevel = 50;
-            for(Product p: allProducts){
-                if(p.getQuantity()<p.getThreshold()){
-                    int reorderQuantity = targetStockLevel = p.getQuantity();
-                    System.out.println("\n⚠️ Low Stock Alert: " + p.getProductName());
-                    System.out.println("Current Quantity: " + p.getQuantity());
-                    System.out.println("Required Reorder Quantity: " + reorderQuantity);
-                    String msg = "Product " + p.getProductName() + " us low in stock.\n"
-                            + "Current Quantity: " + p.getQuantity()
-                            + "\nRequired Reorder: " + reorderQuantity;
-                    EmailService.sendAlert(email,p.getProductName(),msg, userName);
+
+            ArrayList<Product> lowStockProducts = new ArrayList<>();
+
+            for (Product p : allProducts) {
+                if (p.getQuantity() < p.getThreshold()) {
+                    lowStockProducts.add(p);
+                }
+            }
+
+            if (!lowStockProducts.isEmpty()) {
+                StringBuilder msg = new StringBuilder();
+                msg.append("⚠️ Low Stock Alert for the following products:\n\n");
+
+                for (Product p : lowStockProducts) {
+                    int reorderQuantity = targetStockLevel - p.getQuantity();
+                    msg.append("Product: ").append(p.getProductName()).append("\n")
+                            .append("Current Quantity: ").append(p.getQuantity()).append("\n")
+                            .append("Required Reorder Quantity: ").append(reorderQuantity).append("\n\n");
                 }
 
+                EmailService.sendAlert(email, "Low Stock Alert Summary", msg.toString(), userName);
+                System.out.println("📧 Combined low-stock alert email sent successfully!");
+            } else {
+                System.out.println("✅ All products have sufficient stock.");
             }
+
         } catch (Exception e) {
             System.out.println("❌ Error: " + e.getMessage());
         }

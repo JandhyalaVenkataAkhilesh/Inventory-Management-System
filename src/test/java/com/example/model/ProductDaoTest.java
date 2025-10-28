@@ -65,7 +65,7 @@ public class ProductDaoTest {
 
         product.setQuantity(250);
         product.setPrice(2200.00);
-        dao.updateInventory(product);
+        dao.updateProduct(product);
 
         Product updated = dao.getProductById(102);
         assertEquals(250, updated.getQuantity());

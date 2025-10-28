@@ -84,13 +84,13 @@ public class MockitoTest {
         product.setQuantity(250);
         product.setPrice(2200.00);
 
-        doNothing().when(dao).updateInventory(product);
+        doNothing().when(dao).updateProduct(product);
         when(dao.getProductById(102)).thenReturn(product);
 
-        dao.updateInventory(product);
+        dao.updateProduct(product);
         Product updated = dao.getProductById(102);
 
-        verify(dao).updateInventory(product);
+        verify(dao).updateProduct(product);
         assertEquals(250, updated.getQuantity());
         assertEquals(2200.00, updated.getPrice(), 0.001);
     }

@@ -113,7 +113,7 @@ class ProductDaoTest {
         when(mockRs.getInt(6)).thenReturn(50);
         when(mockUpdate.executeUpdate()).thenReturn(1);
 
-        productDao.updateInventory(p);
+        productDao.updateProduct(p);
 
         verify(mockUpdate, times(1)).executeUpdate();
     }
@@ -131,7 +131,7 @@ class ProductDaoTest {
         when(mockSelect.executeQuery()).thenReturn(mockRs);
         when(mockRs.next()).thenReturn(false);
 
-        productDao.updateInventory(p);
+        productDao.updateProduct(p);
 
         verify(mockUpdate, never()).executeUpdate();
     }

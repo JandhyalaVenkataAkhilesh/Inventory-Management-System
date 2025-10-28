@@ -6,9 +6,12 @@ import com.infosys.inventory.util.DbConnection;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class ProductDao {
-
+public class ProductDao implements ProductDaoInterface{
+    public static final String RESET = "\u001B[0m";
+    public static final String GREEN_BOLD = "\u001B[1m\u001B[32m";
+    public static final String RED_BOLD = "\u001B[1m\u001B[31m";
     // insert a record into inventory
+    @Override
     public void addProduct(Product p) {
         try (Connection con = DbConnection.getConnect();
              PreparedStatement pstmt = con.prepareStatement("insert into products values(?,?,?,?,?,?)")) {
@@ -21,7 +24,7 @@ public class ProductDao {
             pstmt.setInt(6,p.getThreshold());
             int count=pstmt.executeUpdate();
             if(count==1)
-                System.out.println("✅ Record inserted successfully!");
+                System.out.println(GREEN_BOLD + "\n  ✅ Product added successfully!\n" + RESET);
             else
                 System.out.println(" ❌User not Found");
 
@@ -31,6 +34,7 @@ public class ProductDao {
     }
 
     // retrieve a specific record
+    @Override
     public Product getProductById(int productId) {
         try (Connection con = DbConnection.getConnect();
              PreparedStatement pstmt = con.prepareStatement("select * from products where product_id=?")) {
@@ -59,7 +63,8 @@ public class ProductDao {
     }
 
     // update record
-    public void updateInventory(Product p) {
+    @Override
+    public void updateProduct(Product p) {
         try (Connection con = DbConnection.getConnect();
              PreparedStatement pstmt = con.prepareStatement(
                      "update products set product_name=?,product_quantity=?,product_price=?,product_category=?,threshold=? where product_id=?");
@@ -73,7 +78,7 @@ public class ProductDao {
                 return;
             }
 
-            Product obj = new Product(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getDouble(4), rs.getString(5));
+            Product obj = new Product(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getDouble(4), rs.getString(5),rs.getInt(6));
 
             if (p.getProductName() == null || p.getProductName().isEmpty()) p.setProductName(obj.getProductName());
             if (p.getQuantity() == 0) p.setQuantity(obj.getQuantity());
@@ -89,7 +94,7 @@ public class ProductDao {
 
             int count=pstmt.executeUpdate();
             if(count==1)
-                System.out.println("✅ Record updated successfully!");
+                System.out.println(GREEN_BOLD + "\n  ✅ Product details updated successfully!\n" + RESET);
             else
                 System.out.println("❌ No product found with this ID: " + p.getProductId());
 
@@ -99,6 +104,7 @@ public class ProductDao {
     }
 
     // delete record
+    @Override
     public void deleteProduct(int productId) {
         try (Connection con = DbConnection.getConnect();
              PreparedStatement pstmt = con.prepareStatement("delete from products where product_id=?")) {
@@ -107,7 +113,7 @@ public class ProductDao {
             int count=pstmt.executeUpdate();
 
             if(count==1)
-                System.out.println("✅ Record deleted successfully!");
+                System.out.println(RED_BOLD + "\n  ⚠️  Product with ID " + productId + " deleted successfully!\n" + RESET);
             else
                 System.out.println("❌ No product found with this ID: " + productId);
         } catch (SQLException e) {
@@ -116,6 +122,7 @@ public class ProductDao {
     }
 
     // retrieve all records
+    @Override
     public ArrayList<Product> getAllProducts() {
         ArrayList<Product> allProducts = new ArrayList<>();
         try (Connection con = DbConnection.getConnect();
@@ -143,6 +150,7 @@ public class ProductDao {
     }
 
     // filter products by price range
+    @Override
     public void FilterRange(double minPrice, double maxPrice) {
         try (Connection con = DbConnection.getConnect();
              PreparedStatement pstmt = con.prepareStatement("SELECT * FROM products WHERE product_price BETWEEN ? AND ?")) {

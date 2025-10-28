@@ -38,7 +38,7 @@ public class InventoryService {
         if (p.getProductId() < 0) {
             throw new InvalidProductException("Product ID cannot be negative");
         }
-        dao.updateInventory(p);
+        dao.updateProduct(p);
     }
 
     public void deleteInventory(int productId) throws ProductNotFoundException {

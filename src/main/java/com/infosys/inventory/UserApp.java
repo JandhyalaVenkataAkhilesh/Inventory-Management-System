@@ -303,7 +303,6 @@ public class UserApp {
 
             Product p = new Product(productId, productName, quantity, price, category, threshold);
             productDao.addProduct(p);
-            System.out.println(GREEN_BOLD + "\n  ✅ Product added successfully!\n" + RESET);
         } catch (InputMismatchException e) {
             System.out.println(RED_BOLD + "\n  ❌ Invalid Input! Please check your data types." + RESET);
             sc.nextLine();
@@ -364,13 +363,12 @@ public class UserApp {
             double updatePrice = sc.nextDouble(); sc.nextLine();
             System.out.print(CYAN + "  🗂️  Enter New Category (leave blank)     : " + RESET);
             String updateCategory = sc.nextLine().trim();
-            System.out.print("Enter new Threshold Value (0 for no change): ");
-            String updateThre = sc.nextLine();
-            int updateThreshold = parseInt(updateThre);
+            System.out.print(CYAN + "  🔻  Enter New Threshold Value (0 for no change) : " + RESET);
+            int updateThreshold = sc.nextInt();
+            sc.nextLine();
 
             Product updateProduct = new Product(updateId, updateName, updateQuantity, updatePrice, updateCategory, updateThreshold, true);
-            productDao.updateInventory(updateProduct);
-            System.out.println(GREEN_BOLD + "\n  ✅ Product details updated successfully!\n" + RESET);
+            productDao.updateProduct(updateProduct);
         } catch (InputMismatchException e) { System.out.println(RED_BOLD + "\n  ❌ Invalid Input! ID, Quantity, and Price must be numbers." + RESET); sc.nextLine(); }
         catch (Exception e) { System.out.println(RED_BOLD + "\n  ❌ UNEXPECTED ERROR: " + (e.getMessage() != null ? e.getMessage() : "Please try again.") + RESET); }
     }
@@ -383,7 +381,6 @@ public class UserApp {
             System.out.print(CYAN + "  🔢 Enter Product ID to delete : " + RESET);
             int deleteId = sc.nextInt(); sc.nextLine();
             productDao.deleteProduct(deleteId);
-            System.out.println(RED_BOLD + "\n  ⚠️  Product with ID " + deleteId + " deleted successfully!\n" + RESET);
         } catch (InputMismatchException e) { System.out.println(RED_BOLD + "\n  ❌ Invalid Input! Please enter a valid number." + RESET); sc.nextLine(); }
         catch (Exception e) { System.out.println(RED_BOLD + "\n  ❌ UNEXPECTED ERROR: " + (e.getMessage() != null ? e.getMessage() : "Please try again.") + RESET); }
     }
